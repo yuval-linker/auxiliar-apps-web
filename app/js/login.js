@@ -2,7 +2,7 @@
 const validarForm = () => {
   // funciones auxiliares
   const validadorMail = (mail) => mail && mail.includes("@");
-  const validadorNombreApellido = (nombre) => nombre && nombre.length > 4;
+  const validadorUserName = (username) => username && username.length > 4;
   const tieneNumeros = (str) => /\d/.test(str);
   const validadorContrasena = (pswd) => {
     const malas = ["1234", "admin1", "odio a mis Aux >:(2"];
@@ -14,10 +14,10 @@ const validarForm = () => {
 
   // obtener inputs del DOM por el ID
   let emailInput = document.getElementById("email");
-  let nombreInput = document.getElementById("nombre");
-  let apellidoInput = document.getElementById("apellido");
+  let userNameInput = document.getElementById("username");
   let pswdInput = document.getElementById("contrasenna");
 
+  let isValid = false;
   let msg = "";
 
   if (!validadorMail(emailInput.value)) {
@@ -27,18 +27,11 @@ const validarForm = () => {
     emailInput.style.borderColor = "";
   }
 
-  if (!validadorNombreApellido(nombreInput.value)) {
+  if (!validadorUserName(userNameInput.value)) {
     msg += "Nombre malo!\n";
-    nombreInput.style.borderColor = "red";
+    userNameInput.style.borderColor = "red";
   } else {
-    nombreInput.style.borderColor = "";
-  }
-
-  if (!validadorNombreApellido(apellidoInput.value)) {
-    msg += "Apellido malo!\n";
-    apellidoInput.style.borderColor = "red";
-  } else {
-    apellidoInput.style.borderColor = "";
+    userNameInput.style.borderColor = "";
   }
 
   if (!validadorContrasena(pswdInput.value)) {
@@ -50,9 +43,20 @@ const validarForm = () => {
 
   if (msg === "") {
     msg = "Felicidades ya tienes una cuenta!";
+    isValid = true;
     // loginForm.submit();
+
+    // no contamos con un backend, asi que de momento
+    // utilizaremos el localStorage para dar la
+    // sensacion de que nos hemos autentificado.
+    let username = userNameInput.value;
+    localStorage.setItem("username", username);
   }
   alert(msg); // alertas JS
+
+  if (isValid) {
+    window.location.href = "../html/confesiones.html";
+  }
 };
 
 // recuperamos el boton que envia el form
