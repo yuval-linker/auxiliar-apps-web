@@ -40,8 +40,7 @@ const agregarConfesion = () => {
   // user container
   const confAuthor = document.createElement("div");
   confAuthor.className = "conf-author";
-  confAuthor.appendChild(userImage);
-  confAuthor.appendChild(userNameParagraph);
+  confAuthor.append(userImage, userNameParagraph);
 
   // texto confesion
   const confesion = document.createElement("p");
@@ -49,12 +48,11 @@ const agregarConfesion = () => {
   confesion.innerText = confText;
 
   // agregamos los elementos al cont. de la confesion
-  confContainer.appendChild(confAuthor);
-  confContainer.appendChild(confesion);
+  confContainer.append(confAuthor, confesion);
 
   // agregamos la confesion a la lista
   let confList = document.getElementById("conf-list");
-  confList.appendChild(confContainer);
+  confList.prepend(confContainer);
 };
 let submitConfBtn = document.getElementById("submit-conf-btn");
 submitConfBtn.addEventListener("click", agregarConfesion);
