@@ -1,11 +1,13 @@
-{% extends 'base.html' %} {% block title %} Log in {% endblock %} {% block css
-%}
+{% extends 'base.html' %}
+{% block title %} Log in {% endblock %}
+{% block css %}
 <link
   rel="stylesheet"
   type="text/css"
   href="{{ url_for('static', filename='css/login.css')}}"
 />
-{% endblock %} {% block content %}
+{% endblock %}
+{% block content %}
 <div class="container">
   <div class="logo">
     <img
@@ -15,9 +17,7 @@
     />
     <p id="bajada">Ingresa para mandar tu confesión 🥵</p>
     {% if error %}
-      <div class="error-message">
-        {{ error }}
-      </div>
+    <div class="error-message">{{ error }}</div>
     {% endif %}
   </div>
   <form class="formulario" id="login-form" action="login" method="post">
@@ -37,6 +37,7 @@
     No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate</a>
   </div>
 </div>
-{% endblock %} {% block javascript %}
+{% endblock %}
+{% block javascript %}
 <!-- <script lang="javascript" src="{{ url_for('static', filename='js/login.js') }}"></script> -->
 {% endblock %}
