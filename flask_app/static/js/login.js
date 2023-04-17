@@ -46,18 +46,12 @@ const validarForm = () => {
   if (msg === "") {
     msg = "Felicidades ya tienes una cuenta!";
     isValid = true;
-    // loginForm.submit();
-
-    // no contamos con un backend, asi que de momento
-    // utilizaremos el localStorage para dar la
-    // sensacion de que nos hemos autentificado.
-    let username = userNameInput.value;
-    localStorage.setItem("username", username);
   }
   alert(msg); // alertas JS
 
+  // enviar form
   if (isValid) {
-    window.location.href = "../html/confesiones.html";
+    loginForm.submit();
   }
 };
 
