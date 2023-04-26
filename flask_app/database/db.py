@@ -60,11 +60,24 @@ def get_confessions(page_size):
 	confessions = cursor.fetchall()
 	return confessions
 
-def create_confession(conf_text, conf_img, user_id):
+def create_confession(conf_title, conf_text, conf_img, user_id):
 	conn = get_conn()
 	cursor = conn.cursor()
-	cursor.execute(QUERY_DICT["create_confession"], (conf_text, conf_img, user_id))
+	cursor.execute(QUERY_DICT["create_confession"], (conf_title, conf_text, conf_img, user_id))
 	conn.commit()
+
+def change_profile_picture(username, new_img):
+	conn = get_conn()
+	cursor = conn.cursor()
+	cursor.execute(QUERY_DICT["change_user_image"], (new_img, username))
+	conn.commit()
+
+def get_profile_picture(username):
+	conn = get_conn()
+	cursor = conn.cursor()
+	cursor.execute(QUERY_DICT["get_user_image"], (username,))
+	user_img = cursor.fetchone()
+	return user_img
 	
 
 # -- db-related functions --
@@ -84,8 +97,7 @@ def register_user(username, password, email):
 
 def login_user(username, password):
 	a_user = get_user_by_username(username)
-	a_user_passwd = a_user[3]
-	if a_user is None or a_user_passwd != password:
+	if a_user is None or a_user[3] != password:
 		return False, "Usuario o contraseña incorrectos."
 	return True, None
 

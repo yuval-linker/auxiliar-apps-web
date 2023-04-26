@@ -26,10 +26,37 @@
       <a class="navbar-page" href="{{ url_for('index') }}">Home</a>
       <a class="navbar-page" href="#about">About</a>
       <a class="navbar-page" href="#contact">Contact</a>
-      <a id="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+      <div class="profile-dropdown">
+        <img onclick="openDropdown()" src="{{ profile_picture }}" class="dropbtn" />
+        <div id="profileDropdown" class="dropdown-content">
+          <a href="{{ url_for('profile') }}">Perfil</a>
+          <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+      </div>
     </div>
   </body>
   <section class="main-container">
-    {% block content %}{% endblock %} {% block javascript %}{% endblock %}
+    {% block content %}{% endblock %}
+    {% block javascript %}{% endblock %}
+    <script lang="js">
+      /* When the user clicks on the button,
+      toggle between hiding and showing the dropdown content */
+      const openDropdown = () => {
+        document.getElementById("profileDropdown").classList.toggle("show");
+      }
+
+      // Close the dropdown menu if the user clicks outside of it
+      window.onclick = (event) => {
+        if (!event.target.matches('.dropbtn')) {
+          let dropdowns = document.getElementsByClassName("dropdown-content");
+          for (let i = 0; i < dropdowns.length; i++) {
+            let openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      }
+    </script>
   </section>
 </html>

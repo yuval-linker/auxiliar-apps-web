@@ -14,3 +14,4 @@ flask_app/htmlcov/
 flask_app/dist/
 flask_app/build/
 *.egg-info/
+flask_app/static/uploads

@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for, session
-from utils.validations import validate_login_user, validate_register_user, validate_confession
+from utils.validations import validate_login_user, validate_register_user, validate_confession, validate_conf_img
 from database import db
 from werkzeug.utils import secure_filename
 import hashlib
@@ -19,6 +19,7 @@ def post_conf():
     if username is None:
         return redirect(url_for("login"))
 
+    conf_title = request.form.get("conf-title")
     conf_text = request.form.get("conf-text")
     conf_img = request.files.get("conf-img")
 
@@ -34,8 +35,8 @@ def post_conf():
         conf_img.save(os.path.join(app.config["UPLOAD_FOLDER"], img_filename))
 
         # 3. save confession in db
-        user_id, _, _, _ = db.get_user_by_username(username)
-        db.create_confession(conf_text, img_filename, user_id)
+        user_id, _, _, _, _ = db.get_user_by_username(username)
+        db.create_confession(conf_title, conf_text, img_filename, user_id)
 
     return redirect(url_for("index"))
 
@@ -45,22 +46,73 @@ def index():
     if not user:
         return redirect(url_for("login"))
     
+    user_profile_picture = db.get_profile_picture(user)[0]
+    if user_profile_picture:
+        profile_picture = url_for('static', filename=f"uploads/{user_profile_picture}")
+    else:
+        profile_picture = url_for('static', filename="svg/anonymous.svg")
+    
     # get last confessions 
     data = []
     for conf in db.get_confessions(page_size=3):
-        _, conf_text, conf_img, user_id = conf
-        _, username, _, _ = db.get_user_by_id(user_id)
-        
-        ### CHECKPOINT 
+        _, conf_title, conf_text, conf_img, user_id = conf
+        _, username, _, _, user_img = db.get_user_by_id(user_id)
 
         img_filename = f"uploads/{conf_img}"
         data.append({
             "author": username,
+            "author_img": url_for('static', filename=f"uploads/{user_img}"),
+            "title": conf_title,
             "content": conf_text,
             "path_image": url_for('static', filename=img_filename)
         })
     
-    return render_template("confesions/confesiones.html", data=data)
+    return render_template("confesions/confesiones.html", data=data, profile_picture=profile_picture)
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    user = session.get("user", None)
+    if not user:
+        return redirect(url_for("login"))
+    
+    _, username, email, _, _user_img = db.get_user_by_username(user)
+    if _user_img:
+        profile_picture = url_for('static', filename=f"uploads/{_user_img}")
+    else:
+        profile_picture = url_for('static', filename="svg/anonymous.svg")
+    
+    return render_template("confesions/profile.html", username=username, email=email, profile_picture=profile_picture)
+
+@app.route("/profile/edit", methods=["POST"])
+def edit_img():
+    user = session.get("user", None)
+    if not user:
+        return redirect(url_for("login"))
+    
+    new_img = request.files.get("profile-img")
+    if validate_conf_img(new_img):
+        _filename = hashlib.sha256(
+            secure_filename(new_img.filename).encode("utf-8")
+            ).hexdigest()
+        _extension = filetype.guess(new_img).extension
+        img_filename = f"{_filename}.{_extension}"
+
+
+        # 2. save img as a file
+        new_img.save(os.path.join(app.config["UPLOAD_FOLDER"], img_filename))
+
+        old_img = db.get_profile_picture(user)
+
+        # 3. change user image
+        db.change_profile_picture(user, img_filename)
+
+        # 4. delete old image
+        if old_img:
+            os.remove(os.path.join(app.config["UPLOAD_FOLDER"], old_img[0]))
+    
+    return redirect(url_for('profile'))
+    
+    
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -106,7 +158,7 @@ def login():
         else:
             error += "Uno de los campos no es valido."
 
-        return render_template("auth/login.html")
+        return render_template("auth/login.html", error=error)
     
     elif request.method == "GET":
         if session.get("user", None):
