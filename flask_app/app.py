@@ -107,7 +107,7 @@ def edit_img():
         db.change_profile_picture(user, img_filename)
 
         # 4. delete old image
-        if old_img:
+        if old_img[0]:
             os.remove(os.path.join(app.config["UPLOAD_FOLDER"], old_img[0]))
     
     return redirect(url_for('profile'))
