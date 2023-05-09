@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import Flask, request, render_template, redirect, url_for, session, jsonify
 from utils.validations import validate_login_user, validate_register_user, validate_confession, validate_conf_img
 from database import db
 from werkzeug.utils import secure_filename
@@ -176,6 +176,15 @@ def logout():
 def ruta():
     return render_template("test/ruta.html")
 
+@app.route("/get-conf/<title_substring>", methods=["GET"])
+def get_conf(title_substring):
+    user = session.get("user", None)
+    if not user:
+        return jsonify({"status": "error", "data": []}), 400
+    
+    all_conf = db.get_confessions()
+    match_conf = [c[1].lower() for c in all_conf if title_substring in c[1].lower()]
+    return jsonify({"status": "ok", "data": match_conf})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8007)

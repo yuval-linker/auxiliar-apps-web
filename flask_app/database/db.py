@@ -53,10 +53,13 @@ def create_user(username, password, email):
 	cursor.execute(QUERY_DICT["create_user"], (username, password, email))
 	conn.commit()
 
-def get_confessions(page_size):
+def get_confessions(page_size=None):
 	conn = get_conn()
 	cursor = conn.cursor()
-	cursor.execute(QUERY_DICT["get_confessions"], (page_size,))
+	if page_size:
+		cursor.execute(QUERY_DICT["get_page_confessions"], (page_size,))
+	else:
+		cursor.execute(QUERY_DICT["get_all_confessions"], ())
 	confessions = cursor.fetchall()
 	return confessions
 

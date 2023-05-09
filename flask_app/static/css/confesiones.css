@@ -25,6 +25,43 @@
   width: 100%;
 }
 
+.conf-search-bar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.conf-search-bar > * {
+  padding: 1rem;
+  background: white;
+  border: 0.2em solid var(--black-color);
+  border-radius: 0.25em;
+  box-shadow: 0.2em 0.2em 0px 0px black;
+  margin: 0em 1em 1em 0em;
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2rem;
+}
+
+#search-list {
+  padding: 1rem;
+  background: white;
+  border: 0.2em solid var(--black-color);
+  border-radius: 0.25em;
+  box-shadow: 0.2em 0.2em 0px 0px black;
+  margin: 0em 1em 2em 0em;
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2rem;
+}
+
+.search-input {
+  width: 90%;
+}
+
+.search-icon {
+  max-width: 2rem;
+}
+
 #conf-form {
   display: flex;
   flex-flow: row wrap;

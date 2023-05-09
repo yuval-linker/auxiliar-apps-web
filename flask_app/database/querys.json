@@ -5,6 +5,7 @@
     "create_user": "INSERT INTO usuarios (username, password, email) VALUES (%s, %s, %s);",
     "change_user_image": "UPDATE usuarios SET profile_img=%s WHERE username=%s;",
     "get_user_image": "SELECT profile_img FROM usuarios WHERE username=%s",
-    "get_confessions": "SELECT * FROM confesiones ORDER BY id DESC LIMIT %s;",
+    "get_page_confessions": "SELECT * FROM confesiones ORDER BY id DESC LIMIT %s;",
+    "get_all_confessions": "SELECT * FROM confesiones ORDER BY id DESC;",
     "create_confession": "INSERT INTO confesiones (conf_title, conf_text, conf_img, user_id) VALUES (%s, %s, %s, %s);"
 }

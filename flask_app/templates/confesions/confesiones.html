@@ -26,6 +26,13 @@
         </form>
         </div>
     <div id="conf-list">
+        <div class="conf-search-bar">
+            <input class="search-input" id="search-input" type="text">
+            <img class="search-icon" id="search-icon" src="{{ url_for('static', filename='svg/search.svg') }}" alt="sus">
+        </div>
+        <div id="search-list" hidden>
+
+        </div>
         {% if data %}
             {% for conf in data%}
             <div class="conf-container">
@@ -60,6 +67,9 @@
 </div>
 {% endblock content %}
 {% block javascript %}
-    <script lang="javascript" src="{{ url_for('static', filename='js/confesiones.js') }}"></script>
-    <script lang="javascript" src="{{ url_for('static', filename='js/modal.js') }}"></script>
+<script lang="javascript" src="{{ url_for('static', filename='js/jquery-3.5.1.min.js') }}"></script>
+<script lang="javascript" src="{{ url_for('static', filename='js/confesiones.js') }}"></script>
+<script lang="javascript" src="{{ url_for('static', filename='js/modal.js') }}"></script>
+<script lang="javascript" src="{{ url_for('static', filename='js/search-bar.js') }}"></script>
+
 {% endblock %}
