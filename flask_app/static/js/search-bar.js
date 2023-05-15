@@ -82,7 +82,10 @@ let fetchAJAX = (url) => {
     2. No automatic request cancelation: Unlike XHR, Fetch doesn't provide a built-in way to cancel a request.
     3. Poor error handling: By default, Fetch only rejects a Promise on network failure, not on HTTP error status (like 404 or 500). 
     */
-  fetch(url) // 1 acceder al url
+  fetch(url, {
+    mode: "cors",
+    credentials: "include",
+  }) // 1 acceder al url
     .then((response) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -111,7 +114,7 @@ let ajaxHandlerMapper = {
 
 let handleAJAX = (event) => {
   let ajaxHandler = ajaxHandlerMapper[ajaxMethod];
-  ajaxHandler(`http://localhost:8007/get-conf/${event.target.value}`);
+  ajaxHandler(`${window.origin}/get-conf/${event.target.value}`);
 };
 
 inputSearch.addEventListener("input", handleAJAX);

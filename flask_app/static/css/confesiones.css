@@ -189,3 +189,18 @@ label > input {
   border: 0.2em solid var(--black-color);
   border-radius: 0.25em;
 }
+
+.conf-likes {
+  display: flex;
+}
+
+.heart {
+  width: 30px;
+  cursor: pointer;
+}
+
+.like-number {
+  font-weight: 600;
+  text-align: center;
+  padding: 1em 0;
+}

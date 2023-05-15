@@ -81,6 +81,20 @@ def get_profile_picture(username):
 	cursor.execute(QUERY_DICT["get_user_image"], (username,))
 	user_img = cursor.fetchone()
 	return user_img
+
+def get_likes():
+	conn = get_conn()
+	cursor = conn.cursor()
+	cursor.execute(QUERY_DICT["get_all_likes"])
+	likes = cursor.fetchall()
+	likes = {x: y for x,y in likes}
+	return likes
+
+def like_conf(user_id, conf_id):
+	conn = get_conn()
+	cursor = conn.cursor()
+	cursor.execute(QUERY_DICT["create_like"], (user_id, conf_id))
+	conn.commit()
 	
 
 # -- db-related functions --

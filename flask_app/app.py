@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
+from flask_cors import cross_origin
 from utils.validations import validate_login_user, validate_register_user, validate_confession, validate_conf_img
 from database import db
 from werkzeug.utils import secure_filename
@@ -11,6 +12,7 @@ UPLOAD_FOLDER = 'static/uploads'
 app = Flask(__name__)
 app.secret_key = "s3cr3t_k3y"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SESSION_COOKIE_HTTPONLY'] = False
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 
 @app.route("/post-conf", methods=["POST"])
@@ -52,19 +54,24 @@ def index():
     else:
         profile_picture = url_for('static', filename="svg/anonymous.svg")
     
+    likes = db.get_likes()
+
     # get last confessions 
     data = []
     for conf in db.get_confessions(page_size=3):
-        _, conf_title, conf_text, conf_img, user_id = conf
+        conf_id, conf_title, conf_text, conf_img, user_id = conf
         _, username, _, _, user_img = db.get_user_by_id(user_id)
 
+        author_img = url_for('static', filename=f"uploads/{user_img}") if user_img else url_for('static', filename="svg/anonymous.svg")
         img_filename = f"uploads/{conf_img}"
         data.append({
+            "id": conf_id,
             "author": username,
-            "author_img": url_for('static', filename=f"uploads/{user_img}"),
+            "author_img": author_img,
             "title": conf_title,
             "content": conf_text,
-            "path_image": url_for('static', filename=img_filename)
+            "path_image": url_for('static', filename=img_filename),
+            "likes": likes.get(conf_id, 0)
         })
     
     return render_template("confesions/confesiones.html", data=data, profile_picture=profile_picture)
@@ -177,6 +184,7 @@ def ruta():
     return render_template("test/ruta.html")
 
 @app.route("/get-conf/<title_substring>", methods=["GET"])
+@cross_origin(origin="localhost", supports_credentials=True)
 def get_conf(title_substring):
     user = session.get("user", None)
     if not user:
@@ -185,6 +193,20 @@ def get_conf(title_substring):
     all_conf = db.get_confessions()
     match_conf = [c[1].lower() for c in all_conf if title_substring in c[1].lower()]
     return jsonify({"status": "ok", "data": match_conf})
+
+@app.route("/like", methods=["POST"])
+@cross_origin(origin="localhost", supports_credentials=True) # Cross Origin Resource Sharing
+def like():
+    user = session.get("user", None)
+    if not user:
+        return jsonify({"status": "error", "data": []}), 400
+    
+    real_user = db.get_user_by_username(user)
+    res = request.json
+    conf_id = res["conf_id"]
+
+    db.like_conf(real_user[0], conf_id)
+    return jsonify({"status": "ok"})
 
 if __name__ == "__main__":
     app.run(debug=True, port=8007)

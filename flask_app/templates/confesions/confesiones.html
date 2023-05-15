@@ -43,6 +43,10 @@
                     <div class="conf-header-text">
                         <h2 class="title">{{ conf.title }}</h2>
                         <p class="conf-author">{{ conf.author }}</p>
+                        <div class="conf-likes">
+                            <img class="heart" src="{{ url_for('static', filename='svg/heart.svg') }}" onclick='likeConfession({{ conf.id }})'>
+                            <span class="like-number" id="number-{{ conf.id }}">{{ conf.likes }}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="conf-content">
