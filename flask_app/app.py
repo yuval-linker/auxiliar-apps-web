@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 import hashlib
 import filetype
 import os
+from datetime import datetime, timedelta
+import random
 
 UPLOAD_FOLDER = 'static/uploads'
 
@@ -24,6 +26,12 @@ def post_conf():
     conf_title = request.form.get("conf-title")
     conf_text = request.form.get("conf-text")
     conf_img = request.files.get("conf-img")
+    conf_timestamp = datetime.utcnow()
+    _form_lat = request.form.get("conf-lat")
+    _form_long = request.form.get("conf-long")
+    conf_lat = None if _form_lat == "" else float(_form_lat)
+    conf_long = None if _form_long == "" else float(_form_long)
+
 
     if validate_confession(conf_text, conf_img):
         # 1. generate random name for img
@@ -38,7 +46,7 @@ def post_conf():
 
         # 3. save confession in db
         user_id, _, _, _, _ = db.get_user_by_username(username)
-        db.create_confession(conf_title, conf_text, img_filename, user_id)
+        db.create_confession(conf_title, conf_text, img_filename, user_id, conf_timestamp, conf_lat, conf_long)
 
     return redirect(url_for("index"))
 
@@ -59,7 +67,7 @@ def index():
     # get last confessions 
     data = []
     for conf in db.get_confessions(page_size=3):
-        conf_id, conf_title, conf_text, conf_img, user_id = conf
+        conf_id, conf_title, conf_text, conf_img, user_id, conf_timestamp, conf_lat, conf_long = conf
         _, username, _, _, user_img = db.get_user_by_id(user_id)
 
         author_img = url_for('static', filename=f"uploads/{user_img}") if user_img else url_for('static', filename="svg/anonymous.svg")
@@ -71,7 +79,10 @@ def index():
             "title": conf_title,
             "content": conf_text,
             "path_image": url_for('static', filename=img_filename),
-            "likes": likes.get(conf_id, 0)
+            "likes": likes.get(conf_id, 0),
+            "conf_timestamp": conf_timestamp,
+            "conf_lat": conf_lat,
+            "conf_long": conf_long
         })
     
     return render_template("confesions/confesiones.html", data=data, profile_picture=profile_picture)
@@ -207,6 +218,62 @@ def like():
 
     db.like_conf(real_user[0], conf_id)
     return jsonify({"status": "ok"})
+
+# --- Stats ---
+@app.route("/stats", methods=["GET"])
+def stats():
+    return render_template("confesions/stats.html")
+
+@app.route("/get-stats-data", methods=["GET"])
+@cross_origin(origin="localhost", supports_credentials=True)
+def get_stats_data():
+    """
+    Since we don't have that many confessions yet but we NEED to show off
+    our fancy new chart, we are going to generate some random data.
+    """
+    get_random_date = lambda start_date, end_date : start_date + timedelta(seconds=random.randint(0, int((end_date - start_date).total_seconds())))
+    get_random_int = lambda start_int, end_int: random.randint(start_int, end_int)
+    
+    random_data = [{
+        "date": get_random_date(datetime(2020, 1, 1), datetime(2022, 12, 31)),
+        "count": get_random_int(1, 10)
+    } for _ in range(50)]
+    random_data.sort(key=lambda x: x["date"])
+
+    for row in random_data:
+        row["date"] = row["date"].strftime("%Y-%m-%d")
+
+    return jsonify(random_data)
+
+
+# --- Map ---
+@app.route("/map", methods=["GET"])
+def conf_map():
+    return render_template("confesions/map.html")
+
+@app.route("/get-map-data", methods=["GET"])
+@cross_origin(origin="localhost", supports_credentials=True)
+def get_map_data():
+    """
+    Returns confessions with latlong data for marker placement.
+    """
+    
+    all_confs = db.get_confessions()
+    markers = []
+    for conf in all_confs:
+        _, conf_title, conf_text, _, user_id, conf_timestamp, conf_lat, conf_long = conf
+        if conf_lat is not None and conf_long is not None:
+            _, username, _, _, _ = db.get_user_by_id(user_id)
+            markers.append({
+                "conf_title": conf_title,
+                "conf_text": conf_text,
+                "conf_timestamp": conf_timestamp,
+                "conf_lat": conf_lat,
+                "conf_long": conf_long,
+                "username": username,
+            })
+
+    return jsonify(markers)
 
 if __name__ == "__main__":
     app.run(debug=True, port=8007)

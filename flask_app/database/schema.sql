@@ -24,6 +24,9 @@ CREATE TABLE confesiones(
   conf_text VARCHAR(255) NOT NULL,
   conf_img VARCHAR(255) NOT NULL,
   user_id BIGINT UNSIGNED NOT NULL,
+  conf_timestamp DATETIME,
+  conf_lat FLOAT,
+  conf_long FLOAT,
   FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 

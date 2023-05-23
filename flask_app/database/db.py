@@ -63,10 +63,10 @@ def get_confessions(page_size=None):
 	confessions = cursor.fetchall()
 	return confessions
 
-def create_confession(conf_title, conf_text, conf_img, user_id):
+def create_confession(conf_title, conf_text, conf_img, user_id, conf_timestamp, conf_lat, conf_long):
 	conn = get_conn()
 	cursor = conn.cursor()
-	cursor.execute(QUERY_DICT["create_confession"], (conf_title, conf_text, conf_img, user_id))
+	cursor.execute(QUERY_DICT["create_confession"], (conf_title, conf_text, conf_img, user_id, conf_timestamp, conf_lat, conf_long))
 	conn.commit()
 
 def change_profile_picture(username, new_img):
