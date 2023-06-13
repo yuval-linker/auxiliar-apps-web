@@ -23,7 +23,7 @@ import com.aux.spring_app.confession.ConfessionRepository;
 
 @Service
 public class AppService {
-    private final String pathStatic = "./src/main/resources/static";
+    private final String pathStatic = "./spring_app/src/main/resources/static";
     private final ConfessionRepository confessionRepository;
 
     @Autowired

@@ -1,7 +1,40 @@
 <div th:fragment="navbar" class="navbar">
-    <img id="logo-id" th:src="@{/svg/anonymous.svg}" alt="Logo de Confesiones 851" />
-    <h1>Confesiones 851</h1>
-    <a class="navbar-page" th:href="@{/}">Home</a>
-    <a class="navbar-page" th:href="@{/stats}">Stats</a>
-    <a class="navbar-page" th:href="@{/map}">Map</a>
+  <img
+    id="logo-id"
+    th:src="@{/svg/anonymous.svg}"
+    alt="Logo de Confesiones 851"
+  />
+  <h1>Confesiones 851</h1>
+  <a class="navbar-page" th:href="@{/}">Home</a>
+  <a class="navbar-page" th:href="@{/stats}">Stats</a>
+  <a class="navbar-page" th:href="@{/map}">Map</a>
+  <div class="profile-dropdown">
+    <img onclick="openDropdown()" th:src="${user.getProfileImg()}" class="dropbtn" />
+    <div id="profileDropdown" class="dropdown-content">
+      <a th:href="@{/profile}">Perfil</a>
+      <form th:action="@{/logout}" method="POST">
+        <input type="submit" value="Logout" />
+      </form>
+    </div>
+  </div>
+  <script lang="js">
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    const openDropdown = () => {
+      document.getElementById("profileDropdown").classList.toggle("show");
+    }
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = (event) => {
+      if (!event.target.matches('.dropbtn')) {
+        let dropdowns = document.getElementsByClassName("dropdown-content");
+        for (let i = 0; i < dropdowns.length; i++) {
+          let openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+  </script>
 </div>

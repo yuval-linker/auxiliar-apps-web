@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <title>Perfil</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/confesiones.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal.css}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link
+      rel="stylesheet"
+      th:href="@{/css/profile.css}"
+    />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/nav :: navbar}"></div>
+    <div class="card">
+      <img
+        th:src="${user.getProfileImg()}"
+        alt="Imagen del usuario"
+        class="profile-picture"
+      />
+      <h1 class="username" th:text="${user.getUsername()}"></h1>
+      <p class="email" th:text="${user.getEmail()}"></p>
+      <form
+        th:action="@{/profile}"
+        method="post"
+        enctype="multipart/form-data"
+        class="profile-form"
+      >
+        <label for="profile-img"> Cambiar foto de perfil </label>
+        <input
+          name="profile-img"
+          type="file"
+          accept="image/png, image/jpg, image/gif, image/jpeg"
+        />
+        <button>Guardar</button>
+      </form>
+    </div>
+  </body>
+</html>
